@@ -1,0 +1,18 @@
+- hosts: servers
+  
+  tasks:
+    - name: install git
+      dnf: 
+        name: git 
+        state: present 
+        update_cache: yes
+      become: yes
+
+    - name: git version
+      command:
+        cmd: git --version
+      register: git_version
+
+    - name: display git version
+      debug:
+        var: git_version.stdout_lines[0]
