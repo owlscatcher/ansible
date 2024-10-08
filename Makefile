@@ -6,3 +6,9 @@ install-git:
 
 remove-git:
 	ansible-playbook './playbook/remove_git_playbook.yml' -i './inventory-file/production.ini'
+
+install-pkg:
+	ansible-playbook './playbook/step_4_playbook.yml' -i './inventory-file/production.ini' -t package
+
+add-users:
+	ansible-playbook './playbook/step_4_playbook.yml' -i './inventory-file/production.ini' -t user
