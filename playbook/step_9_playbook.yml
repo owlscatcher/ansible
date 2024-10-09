@@ -1,0 +1,49 @@
+- hosts: servers
+  gather_facts: no
+
+  vars:
+    users: [
+      { name: sansa, groups: [stark, lannister] }, 
+      { name: jeor, groups: [mormont] }, 
+      { name: robert, groups: [baratheon] }
+    ]
+    gitconfig_path: ../files/step_9/.gitconfig.j2
+    auth_key_path: ../files/step_9/authorized_keys
+
+  tasks:
+    - name: Create groups
+      group:
+        name: "{{item}}"
+      loop:
+        - lannister
+        - stark
+        - mormont
+        - baratheon
+
+    - name: Create users
+      user:
+        name: "{{ item.name }}"
+        groups: "{{ item.groups | join(', ') }}"
+        create_home: yes
+        state: present
+      loop: "{{ users }}"
+
+    - name: Add Git-config for user
+      template:
+        src: "{{ gitconfig_path }}"
+        dest: "/home/{{ item.name }}/.gitconfig"
+      loop: "{{ users }}"
+    
+    - name: Create ssh dir
+      file:
+        path: "/home/{{ item.name }}/.ssh"
+        state: directory
+        owner: "{{ item.name }}"
+      loop: "{{ users }}"
+
+    - name: Add auth key for user
+      copy:
+        src: "{{ auth_key_path }}"
+        dest: "/home/{{item.name}}/.ssh/authorized_keys"
+      loop: "{{ users }}"
+
