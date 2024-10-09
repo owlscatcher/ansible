@@ -1,0 +1,10 @@
+- hosts: servers
+  vars:
+    src_dir: ../files/step_7
+    root_dir: /usr/share/nginx/html
+  tasks:
+    - name: Update index.html with inventory file vars 
+      template:
+        src: "{{ src_dir }}/index.html.j2"
+        dest: "{{ root_dir }}/index.html"
+
