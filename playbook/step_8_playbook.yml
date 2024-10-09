@@ -1,0 +1,10 @@
+- hosts: servers
+  gather_facts: no 
+  tasks:
+    - name: Install Git
+      dnf:
+        name: git
+        state: latest
+        update_cache: yes
+      become: yes
+
