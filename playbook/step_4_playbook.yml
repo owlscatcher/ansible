@@ -1,24 +1,25 @@
-- hosts: servers
-
+---
+- name: Play for step 4
+  hosts: servers
   vars:
     users_to_add:
       - username: arya
         groups: [stark]
         state: present
         shell: /bin/bash
-        create_home: yes
+        create_home: true
         append: true
       - username: sansa
         groups: [stark, lannister]
         state: present
         shell: /bin/bash
-        create_home: yes
+        create_home: true
         append: true
       - username: tyrion
         groups: [lannister]
         state: present
         shell: /bin/bash
-        create_home: yes
+        create_home: true
         append: true
 
     groups_to_add:
@@ -26,32 +27,32 @@
       - name: lannister
 
   tasks:
-    - name: update dnf cache
-      dnf:
-        state: latest
-        update_cache: yes
+    - name: Update dnf cache
+      ansible.builtin.dnf:
+        state: present
+        update_cache: true
       tags: package
 
-    - name: install pkg
-      dnf:
+    - name: Install pkg
+      ansible.builtin.dnf:
         name: [git, make, nodejs]
         state: present
       tags: package
 
-    - name: add starks groups
-      group:
+    - name: Add starks groups
+      ansible.builtin.group:
         name: stark
         state: present
       tags: [user, group]
 
-    - name: add lannisters group
-      group:
+    - name: Add lannisters group
+      ansible.builtin.group:
         name: lannister
         state: present
       tags: [user, group]
 
-    - name: add user
-      user:
+    - name: Add user
+      ansible.builtin.user:
         name: "{{ item.username }}"
         groups: "{{ item.groups | join(', ') }}"
         state: "{{ item.state }}"

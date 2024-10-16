@@ -1,11 +1,11 @@
 ---
-- name: Play for step 7
+- name: Play for step 11
   hosts: servers
   vars:
-    src_dir: ../files/step_7
-    root_dir: /usr/share/nginx/html
+    word: msg={{ "This is server" | server_name }}
+
   tasks:
-    - name: Update index.html with inventory file vars
+    - name:
       ansible.builtin.template:
         src: "{{ src_dir }}/index.html.j2"
         dest: "{{ root_dir }}/index.html"

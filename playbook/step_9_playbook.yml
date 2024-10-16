@@ -1,19 +1,15 @@
-- hosts: servers
-  gather_facts: no
-
+---
+- name: Play for step 9
+  hosts: servers
+  gather_facts: false
   vars:
-    users: [
-      { name: sansa, groups: [stark, lannister] }, 
-      { name: jeor, groups: [mormont] }, 
-      { name: robert, groups: [baratheon] }
-    ]
+    users: [{ name: sansa, groups: [stark, lannister] }, { name: jeor, groups: [mormont] }, { name: robert, groups: [baratheon] }]
     gitconfig_path: ../files/step_9/.gitconfig.j2
     auth_key_path: ../files/step_9/authorized_keys
-
   tasks:
     - name: Create groups
-      group:
-        name: "{{item}}"
+      ansible.builtin.group:
+        name: "{{ item }}"
       loop:
         - lannister
         - stark
@@ -21,29 +17,33 @@
         - baratheon
 
     - name: Create users
-      user:
+      ansible.builtin.user:
         name: "{{ item.name }}"
         groups: "{{ item.groups | join(', ') }}"
-        create_home: yes
+        create_home: true
         state: present
       loop: "{{ users }}"
 
     - name: Add Git-config for user
-      template:
+      ansible.builtin.template:
         src: "{{ gitconfig_path }}"
-        dest: "/home/{{ item.name }}/.gitconfig"
-      loop: "{{ users }}"
-    
-    - name: Create ssh dir
-      file:
-        path: "/home/{{ item.name }}/.ssh"
-        state: directory
+        dest: /home/{{ item.name }}/.gitconfig
+        mode: "0644"
         owner: "{{ item.name }}"
       loop: "{{ users }}"
 
-    - name: Add auth key for user
-      copy:
-        src: "{{ auth_key_path }}"
-        dest: "/home/{{item.name}}/.ssh/authorized_keys"
+    - name: Create ssh dir
+      ansible.builtin.file:
+        path: /home/{{ item.name }}/.ssh
+        state: directory
+        owner: "{{ item.name }}"
+        mode: "0644"
       loop: "{{ users }}"
 
+    - name: Add auth key for user
+      ansible.builtin.copy:
+        src: "{{ auth_key_path }}"
+        dest: /home/{{ item.name }}/.ssh/authorized_keys
+        mode: "0644"
+        owner: "{{ item.name }}"
+      loop: "{{ users }}"

@@ -1,31 +1,36 @@
-- hosts: servers
+---
+- name: Play for step 6
+  hosts: servers
   vars:
     nginx_port: 8080
     src_dir: ../files/step_6
     root_dir: /usr/share/nginx/html
   tasks:
     - name: Install Nginx
-      dnf:
+      ansible.builtin.dnf:
         name: nginx
-        state: latest
-      become: yes
+        state: present
+      become: true
 
     - name: Copy index page
-      copy:
+      ansible.builtin.copy:
         src: "{{ src_dir }}/index.html"
         dest: "{{ root_dir }}/index.html"
+        mode: preserve
+      become: true
 
     - name: Update Nginx config
-      template:
+      ansible.builtin.template:
         src: "{{ src_dir }}/nginx.conf.j2"
         dest: /etc/nginx/nginx.conf
+        mode: "0644"
       notify:
-        - restart nginx
-      become: yes
+        - Restart nginx
+      become: true
 
   handlers:
-    - name: restart nginx
-      service:
+    - name: Restart nginx
+      ansible.builtin.service:
         name: nginx
         state: reloaded
-      become: yes
+      become: true

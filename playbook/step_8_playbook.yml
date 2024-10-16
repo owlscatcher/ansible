@@ -1,10 +1,11 @@
-- hosts: servers
-  gather_facts: no 
+---
+- name: Play for step 8
+  hosts: servers
+  gather_facts: false
   tasks:
     - name: Install Git
-      dnf:
+      ansible.builtin.dnf:
         name: git
-        state: latest
-        update_cache: yes
-      become: yes
-
+        state: present
+        update_cache: true
+      become: true

@@ -1,7 +1,8 @@
-- hosts: servers
-
+---
+- name: Play for remove git
+  hosts: servers
   tasks:
-    - name: remove git
-      dnf:
+    - name: Remove git
+      ansible.builtin.dnf:
         name: git
         state: absent

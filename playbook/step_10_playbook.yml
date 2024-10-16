@@ -1,0 +1,39 @@
+---
+- name: Play for step 10
+  hosts: servers
+  gather_facts: false
+
+  vars:
+    users:
+      [
+        { name: sansa, groups: [stark, lannister] },
+        { name: jeor, groups: [mormont] },
+        { name: robert, groups: [baratheon] },
+      ]
+    gitconfig_path: ../files/step_9/.gitconfig.j2
+    auth_key_path: ../files/step_9/authorized_keys
+
+  tasks:
+    - name: Create groups
+      ansible.builtin.group:
+        name: "{{ item }}"
+      loop:
+        - lannister
+        - stark
+        - mormont
+        - baratheon
+
+    - name: Create users
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        groups: "{{ item.groups | join(', ') }}"
+        create_home: true
+        state: present
+      loop: "{{ users }}"
+
+    - name: Install duf for lannisters
+      dnf:
+        name: duf
+        state: present
+      when: '"lannister" in {{ item.groups }}'
+      loop: "{{ users }}"
